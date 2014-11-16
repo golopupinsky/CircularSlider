@@ -66,8 +66,8 @@
     CGContextClipToMask(ctx, self.bounds, mask);
     CGImageRelease(mask);
     
-    
-    CGFloat components[8] = {0.0, 0.0, 1.0, 1.0,      1.0, 0.0, 1.0, 1.0 };
+    CGFloat *components;
+    [self getColorsForAngle:angle outColors:&components ];
     
     CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
     CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, components, NULL, 2);
@@ -84,7 +84,7 @@
     if(self.gradientType == radialGradient)
     {
         CGPoint centerPoint = CGPointMake(self.frame.size.width/2, self.frame.size.height/2);
-        CGContextDrawRadialGradient(ctx, gradient, centerPoint, 0, centerPoint, radius + BACKGROUND_WIDTH + BORDER_WIDTH, 0);
+        CGContextDrawRadialGradient(ctx, gradient, centerPoint, radius /2, centerPoint, radius + BACKGROUND_WIDTH + BORDER_WIDTH, 0);
     }
     if(self.gradientType == angularGradient)
     {
@@ -119,6 +119,28 @@
     [[UIColor colorWithWhite:1.0 alpha:0.8]set];
     CGContextFillEllipseInRect(ctx, CGRectMake(handleCenter.x, handleCenter.y, BACKGROUND_WIDTH, BACKGROUND_WIDTH));
     CGContextRestoreGState(ctx);
+}
+
+
+-(void)getColorsForAngle:(float)a outColors:(CGFloat**)colors
+{
+    float rx1,gx1,bx1;
+    float rx2,gx2,bx2;
+    
+    rx1 = a / 360;
+    gx1 = 1 - a / 360;
+    bx1 = 1 - a / 360;
+    
+    rx2 = a / 180;
+    gx2 = 1 - a / 180;
+    bx2 = a < 180 ? ( 1 - a / 180) : a / 180 - 1;
+    
+    CGFloat components[8] = {rx1*1.0, gx1*1.0, bx1*1.0, 1.0,      rx2*1.0, gx2*1.0, bx2*1.0, 1.0 };
+    *colors = malloc(sizeof(CGFloat)* 8);
+    for (int i=0; i<8; i++) {
+        (*colors)[i]=components[i];
+    }
+//    *colors = components;
 }
 
 -(CGPoint)pointFromAngle:(int)angleInt
