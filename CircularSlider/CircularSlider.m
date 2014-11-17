@@ -71,6 +71,7 @@
     
     CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
     CGGradientRef gradient = CGGradientCreateWithColorComponents(baseSpace, components, NULL, 2);
+    free(components);
     CGColorSpaceRelease(baseSpace);
     baseSpace=nil;
     
@@ -140,7 +141,6 @@
     for (int i=0; i<8; i++) {
         (*colors)[i]=components[i];
     }
-//    *colors = components;
 }
 
 -(CGPoint)pointFromAngle:(int)angleInt
