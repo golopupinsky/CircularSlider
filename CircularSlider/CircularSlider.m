@@ -91,25 +91,24 @@
     {
         [[UIColor whiteColor]set];
         UIRectFill([self bounds]);
+
         int subdiv=512;
+        float interiorPerim = M_PI*radius;
+        float exteriorPerim = M_PI*(radius+BACKGROUND_WIDTH);
+        float smallBase= interiorPerim/subdiv;
+        float largeBase= exteriorPerim/subdiv;
         
-        float halfinteriorPerim = M_PI*radius;
-        float halfexteriorPerim = M_PI*(radius+BACKGROUND_WIDTH);
-        float smallBase= halfinteriorPerim/subdiv;
-        float largeBase= halfexteriorPerim/subdiv;
-        
-        UIBezierPath * cell = [UIBezierPath bezierPath];
-        
-        [cell moveToPoint:CGPointMake(- smallBase/2, radius-BACKGROUND_WIDTH/2)];
-        [cell addLineToPoint:CGPointMake(+ smallBase/2, radius-BACKGROUND_WIDTH/2)];
-        
-        [cell addLineToPoint:CGPointMake( largeBase /2, radius+BACKGROUND_WIDTH)];
-        [cell addLineToPoint:CGPointMake(-largeBase /2,  radius+BACKGROUND_WIDTH)];
+        UIBezierPath *cell = [UIBezierPath bezierPath];
+        [cell moveToPoint:CGPointMake(-smallBase/2,radius-BACKGROUND_WIDTH/2)];
+        [cell addLineToPoint:CGPointMake(smallBase/2,radius-BACKGROUND_WIDTH/2)];
+        [cell addLineToPoint:CGPointMake(largeBase/2,radius+BACKGROUND_WIDTH)];
+        [cell addLineToPoint:CGPointMake(-largeBase/2,radius+BACKGROUND_WIDTH)];
         [cell closePath];
         
         float incr = 2 * M_PI / subdiv;
-        CGContextTranslateCTM(ctx, +self.bounds.size.width/2, +self.bounds.size.height/2);
-        
+        CGContextTranslateCTM(	ctx,
+                              CGRectGetWidth(self.bounds)/2,
+                              CGRectGetHeight(self.bounds)/2);
         CGContextRotateCTM(ctx, M_PI/2);
         CGContextRotateCTM(ctx,-incr/2);
         
@@ -119,8 +118,7 @@
             [cell fill];
             [cell stroke];
             CGContextRotateCTM(ctx, -incr);
-        }
-    }
+        }    }
     
     CGGradientRelease(gradient);gradient=nil;
     CGContextRestoreGState(ctx);
